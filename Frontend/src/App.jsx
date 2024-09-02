@@ -19,12 +19,24 @@ function App() {
   }, []);
 
   const addTodo = (newTodo) => {
-    axios.post('http://localhost:8000/api/add', newTodo)
+      axios.post('http://localhost:8000/api/add', newTodo)
       .then(response => {
         const addedTodo=response.data.todo
         setTodos([...todos,addedTodo])
       })
       .catch(error => console.error('Error in adding todos', error));
+  }
+
+  const updateTodo=(id,updatedContent)=>{
+    axios.put(`http://localhost:8000/api/update/${id}`,{content:updatedContent})
+    .then(response=>{
+      if(response.data.success){
+        setTodos(todos.map(todo=>(todo._id===id?{...todo,content:updatedContent}:todo)))
+      }else{
+        console.log("Failed to update");
+      }
+    })
+    .catch(error=>console.error("Error updating todo:",error))
   }
 
   const deleteTodo = (id) => {
@@ -40,7 +52,7 @@ function App() {
       <h1 className='text-4xl font-bold mb-6 text-white'
       >Todo App</h1>
       <TodoForm addTodo={addTodo} />
-      <TodoList todos={todos} deleteTodo={deleteTodo} />
+      <TodoList todos={todos} updateTodo={updateTodo} deleteTodo={deleteTodo} />
 
     </div>
   )
